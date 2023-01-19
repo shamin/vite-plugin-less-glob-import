@@ -1,22 +1,22 @@
-# vite-plugin-sass-glob-import
+# vite-plugin-less-glob-import
 
-> Use glob syntax for @import or @use in your main Sass or SCSS file.
+> Use glob syntax for @import in you less file.
 
 ## Install
 
 ```shell
-npm i -D vite-plugin-sass-glob-import
+npm i -D vite-plugin-less-glob-import
 ```
 
 ```js
 // In vite.config.js
 
 import { defineConfig } from 'vite'
-import sassGlobImports from 'vite-plugin-sass-glob-import';
+import lessGlobImports from 'vite-plugin-less-glob-import';
 
 export default defineConfig({
   plugins: [
-    sassGlobImports()
+    lessGlobImports()
   ]
 });
 ```
@@ -25,23 +25,19 @@ export default defineConfig({
 
 **Note:** Globbing only work in a top-level file, not within referenced files.
 
-```scss
-// In src/styles/main.scss
+```less
+// In src/styles/main.less
 
-@use 'vars/**/*.scss';
-@import 'utils/**/*.scss';
-@import 'objects/**/*.scss';
+@import 'utils/**/*.less';
+@import 'objects/**/*.less';
 ```
 
 The above will be transformed into something like the following before Vite processes it with Sass:
 
-```scss
-@use 'vars/var-a.scss';
-@use 'vars/var-b.scss';
-@import 'utils/utils-a.scss';
-@import 'utils/utils-b.scss';
-@import 'objects/objects-a.scss';
-@import 'objects/objects-b.scss';
-@import 'objects/objects-c.scss';
+```less
+@import 'utils/utils-a.less';
+@import 'utils/utils-b.less';
+@import 'objects/objects-a.less';
+@import 'objects/objects-b.less';
+@import 'objects/objects-c.less';
 ```
-

@@ -7,10 +7,10 @@ import glob from 'glob';
 import minimatch   from "minimatch";
 import c from 'ansi-colors';
 
-export default function sassGlobImports(options: PluginOptions = {}): Plugin {
+export default function lessGlobImports(options: PluginOptions = {}): Plugin {
   // Regular expressions to match against
-  const FILE_REGEX = /\.s[c|a]ss(\?direct)?$/;
-  const IMPORT_REGEX = /^([ \t]*(?:\/\*.*)?)@(import|use)\s+["']([^"']+\*[^"']*(?:\.scss|\.sass)?)["'];?([ \t]*(?:\/[/*].*)?)$/gm;
+  const FILE_REGEX = /\.less(\?direct)?$/;
+  const IMPORT_REGEX = /^([ \t]*(?:\/\*.*)?)@(import)\s+["']([^"']+\*[^"']*(?:\.less)?)["'];?([ \t]*(?:\/[/*].*)?)$/gm;
 
   // Path to the directory of the file being processed
   let filePath = '';
@@ -18,13 +18,12 @@ export default function sassGlobImports(options: PluginOptions = {}): Plugin {
   // Name of the file being processed
   let fileName = '';
 
-  function isSassOrScss(filename: string) {
-    return (!fs.statSync(filename).isDirectory() && path.extname(filename).match(/\.sass|\.scss/i));
+  function isLess(filename: string) {
+    return (!fs.statSync(filename).isDirectory() && path.extname(filename).match(/\.less/i));
   }
 
   const transform = (src: string): string => {
     // Determine if this is Sass (vs SCSS) based on file extension
-    const isSass = fileName.endsWith('.sass');
 
     // Store base locations
     const searchBases = [filePath];
@@ -59,7 +58,7 @@ export default function sassGlobImports(options: PluginOptions = {}): Plugin {
           if (globPatternWithoutWildcard.length) {
             const directoryExists = fs.existsSync(path.join(basePath, globPatternWithoutWildcard));
             if (!directoryExists) {
-              console.warn(c.yellow(`Sass Glob Import: Directories don't exist for the glob pattern "${globPattern}"`));
+              console.warn(c.yellow(`Less Glob Import: Directories don't exist for the glob pattern "${globPattern}"`));
             }
           }
 
@@ -71,7 +70,7 @@ export default function sassGlobImports(options: PluginOptions = {}): Plugin {
         let imports = [];
 
         files.forEach((filename: string) => {
-          if (isSassOrScss(filename)) {
+          if (isLess(filename)) {
             // Remove parent base path
             filename = path.relative(basePath, filename).replace(/\\/g, '/');
             // Remove leading slash
@@ -80,7 +79,7 @@ export default function sassGlobImports(options: PluginOptions = {}): Plugin {
               return minimatch(filename, ignorePath);
             })) {
               // remove parent base path
-              imports.push(`@${importType} "` + filename + '"' + (isSass ? '' : ';'));
+              imports.push(`@${importType} "` + filename + '"' + ';');
             }
           }
         });
@@ -103,7 +102,7 @@ export default function sassGlobImports(options: PluginOptions = {}): Plugin {
   };
 
   return {
-    name: 'sass-glob-import',
+    name: 'less-glob-import',
     enforce: 'pre',
 
     transform(src: string, id: string): TransformResult {

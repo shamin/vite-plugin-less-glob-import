@@ -1,51 +1,27 @@
 import { it, describe, expect, spyOn } from 'vitest';
-import sassGlobImportPlugin from '../src';
+import lessGlobImportPlugin from '../src';
 
 let source = `
 body {}
-@import "files/*.scss";
+@import "files/*.less";
 `;
 
 describe('it correctly converts glob patterns to inline imports', () => {
-  const plugin: any = sassGlobImportPlugin();
+  const plugin: any = lessGlobImportPlugin();
 
-  it('for SCSS', () => {
+  it('for Less', () => {
     const expected = `
 body {}
-@import "files/_file-a.scss";
-@import "files/_file-b.scss";
+@import "files/_file-a.less";
+@import "files/_file-b.less";
 `;
-    const path = __dirname + '/virtual-file.scss';
-    expect(plugin.transform(source, path)?.code).toEqual(expected);
-  });
-
-  it('for Sass', () => {
-    const expected = `
-body {}
-@import "files/_file-a.scss"
-@import "files/_file-b.scss"
-`;
-    const path = __dirname + '/virtual-file.sass';
-    expect(plugin.transform(source, path)?.code).toEqual(expected);
-  });
-
-  it('with @use', () => {
-    let source = `
-body {}
-@use "files/*.scss";
-`;
-    const expected = `
-body {}
-@use "files/_file-a.scss";
-@use "files/_file-b.scss";
-`;
-    const path = __dirname + '/virtual-file.scss';
+    const path = __dirname + '/virtual-file.less';
     expect(plugin.transform(source, path)?.code).toEqual(expected);
   });
 });
 
 describe('it warns for invalid glob paths', () => {
-  const plugin: any = sassGlobImportPlugin();
+  const plugin: any = lessGlobImportPlugin();
 
   it('for SCSS', () => {
     let source = `
